@@ -1,6 +1,6 @@
 # PYTADL (Python YouTube Audio Downloader)
 
-PYTADL is intended for use as an information retrieval tool for analysing the audio in a YouTube video. It's core functionality is to fetch and return the audio in the form of a numpy array. The quality of the resulting audio is substantially lower than that of the original video, though not so degraded as to be unsuitable for processing.
+PYTADL is intended for use as an information retrieval tool for analysing the audio of a YouTube video. It's core functionality is to fetch and return the audio in the form of a numpy array. The quality of the resulting audio is noticeably lower than that of the original video, though not so degraded as to be unsuitable for processing.
 
 ## Prerequisites
 
