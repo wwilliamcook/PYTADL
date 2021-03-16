@@ -1,6 +1,6 @@
 import math
 import pyaudio
-from pytadl import downloadAndDecode
+from pytadl import downloadAudio
 import sys
 
 
@@ -11,10 +11,11 @@ if __name__ == '__main__':
     else:
         url = 'https://www.youtube.com/watch?v=DIuKJ1fWmlk'
     print('fetching audio')
-    a = downloadAndDecode(url)
+    sample_rate = 44100
+    a = downloadAudio(url, sample_rate=sample_rate)
     stream = p.open(format=p.get_format_from_width(2, unsigned=False),
                     channels=1,
-                    rate=16000,
+                    rate=sample_rate,
                     output=True)
     print('playing audio')
     # split up audio for responsive keyboard interrupt

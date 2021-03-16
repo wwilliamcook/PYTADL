@@ -12,28 +12,50 @@ def downloadMP4(youtube_url, output_path=None, filename=None):
     :param str: filename: base name to save file as
     :return: the path to the saved file
     """
-    return (
+    stream = (
         YouTube(youtube_url)
         .streams
-        .filter(file_extension='mp4')
-        .first()
-        .download(output_path=output_path, filename=filename)
+        .order_by('abr')
+        .last()
+    )
+    download_path = stream.download(output_path=output_path, filename=filename)
+
+    return download_path
+
+
+def loadAudio(path, sample_rate=16000):
+    """Returns the audio data loaded from a file.
+
+    :param int: audio sample rate in Hz
+    :return: the mono audio samples as an int16 numpy array
+    """
+    if not isinstance(sample_rate, int):
+        raise TypeError('sample_rate must be of type int')
+    channels = 1
+    buffer, _ = (
+        ffmpeg
+        .input(path)
+        .output('-',
+                format='s16le',
+                acodec='pcm_s16le',
+                ac=channels,
+                ar=sample_rate)
+        .overwrite_output()
+        .run(capture_stdout=True)
     )
 
+    return np.frombuffer(buffer, dtype='int16')
 
-def downloadAndDecode(youtube_url):
+
+def downloadAudio(youtube_url, **load_kwargs):
     """Returns the audio data for the given YouTube video.
 
     :param str: youtube_url: URL of YouTube video to download
     :return: the mono audio samples as an int16 numpy array
     """
     filename = downloadMP4(youtube_url, filename='pytadl-temp')
-    buffer, _ = (
-        ffmpeg
-        .input(filename)
-        .output('-', format='s16le', acodec='pcm_s16le', ac=1, ar='16k')
-        .overwrite_output()
-        .run(capture_stdout=True)
-    )
-    os.remove(filename)
-    return np.frombuffer(buffer, dtype='int16')
+    try:
+        audio_data = loadAudio(filename, **load_kwargs)
+    finally:
+        os.remove(filename)
+    return audio_data

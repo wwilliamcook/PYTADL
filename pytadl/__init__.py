@@ -1,1 +1,3 @@
-from .core import downloadAndDecode
+__all__ = ['loadAudio', 'downloadAudio']
+
+from .core import loadAudio, downloadAudio
